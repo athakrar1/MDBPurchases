@@ -39,10 +39,50 @@ public class PurchaseAdapter extends RecyclerView.Adapter<PurchaseAdapter.Custom
         return 0;
     }
 
+    public void addPurchase(Purchase purchase) {
+        allPurchase.add(purchase);
+        notifyDataSetChanged();
+    }
+
+    public void deletePurchase(Purchase purchase) {
+        allPurchase.remove(purchase);
+        notifyDataSetChanged();
+    }
+
     @Override
     public Filter getFilter() {
         return null;
     }
+
+    private Filter purchaseFilter = new Filter() {
+        ArrayList<Purchase> filtered;
+
+        @Override
+        protected FilterResults performFiltering(CharSequence charSequence) {
+            filtered = new ArrayList<>();
+            if (charSequence == null || charSequence.length() == 0) {
+                filtered.addAll(allPurchase);
+            } else {
+                String filterString = charSequence.toString().toLowerCase().trim();
+                for (Purchase purchase: allPurchase) {
+                    if (purchase.getDescription().toLowerCase().contains(filterString)) {
+                        filtered.add(purchase);
+                    }
+                }
+            }
+            FilterResults results = new FilterResults();
+            results.values = filtered;
+            return results;
+        }
+
+        @Override
+        protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+            filteredPurchase.clear();
+            filteredPurchase.addAll((ArrayList) filterResults.values);
+            notifyDataSetChanged();
+        }
+    };
+
 
     public class CustomViewHolder extends RecyclerView.ViewHolder {
 
